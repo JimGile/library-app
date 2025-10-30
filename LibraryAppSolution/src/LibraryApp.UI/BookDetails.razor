@@ -1,0 +1,205 @@
+@using LibraryApp.Core.DTOs
+@using LibraryApp.Core.Interfaces
+@inject IBookService BookService
+@inject NavigationManager Navigation
+
+@if (Book == null)
+{
+    if (IsLoading)
+    {
+        <div class="container-fluid mt-4">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading book details...</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="container-fluid mt-4">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Book Not Found</h4>
+                <p>The requested book could not be found.</p>
+                <hr>
+                <button type="button" class="btn btn-outline-primary" @onclick="NavigateToBookList">
+                    Back to Book List
+                </button>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#" @onclick="NavigateToBookList" class="text-decoration-none">Book Catalog</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">@Book.Title</li>
+                    </ol>
+                </nav>
+
+                <div class="row">
+                    <!-- Book Details -->
+                    <div class="col-lg-8">
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h1 class="card-title mb-3">@Book.Title</h1>
+                                        <h5 class="card-subtitle mb-3 text-muted">by @Book.Author</h5>
+
+                                        <div class="mb-3">
+                                            <span class="badge @(Book.IsAvailable ? "bg-success" : "bg-warning") fs-6">
+                                                @(Book.IsAvailable ? "Available" : "Currently Borrowed")
+                                            </span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <h6>Category</h6>
+                                            <span class="badge bg-secondary">@Book.Category.Name</span>
+                                            @if (!string.IsNullOrWhiteSpace(Book.Category.Description))
+                                            {
+                                                <small class="text-muted d-block mt-1">@Book.Category.Description</small>
+                                            }
+                                        </div>
+
+                                        @if (!string.IsNullOrWhiteSpace(Book.Description))
+                                        {
+                                            <div class="mb-4">
+                                                <h6>Description</h6>
+                                                <p class="card-text">@Book.Description</p>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="bg-light rounded p-4 mb-3" style="min-height: 200px;">
+                                                <i class="bi bi-book display-1 text-muted"></i>
+                                            </div>
+                                            @if (Book.IsAvailable)
+                                            {
+                                                <button type="button" class="btn btn-success btn-lg w-100 mb-2">
+                                                    <i class="bi bi-bag-check"></i> Reserve Book
+                                                </button>
+                                                <small class="text-muted">Available for immediate pickup</small>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-outline-secondary btn-lg w-100 mb-2" disabled>
+                                                    <i class="bi bi-clock"></i> Join Waitlist
+                                                </button>
+                                                <small class="text-muted">Book is currently borrowed</small>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="col-lg-4">
+                        <!-- Quick Actions -->
+                        <div class="card shadow mb-4">
+                            <div class="card-header">
+                                <h6 class="mb-0">Quick Actions</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-outline-primary" @onclick="NavigateToBookList">
+                                        <i class="bi bi-arrow-left"></i> Back to Catalog
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary">
+                                        <i class="bi bi-share"></i> Share Book
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info">
+                                        <i class="bi bi-info-circle"></i> Similar Books
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Book Information -->
+                        <div class="card shadow">
+                            <div class="card-header">
+                                <h6 class="mb-0">Book Information</h6>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-4">ID</dt>
+                                    <dd class="col-sm-8">#@Book.Id</dd>
+
+                                    <dt class="col-sm-4">Author</dt>
+                                    <dd class="col-sm-8">@Book.Author</dd>
+
+                                    <dt class="col-sm-4">Category</dt>
+                                    <dd class="col-sm-8">@Book.Category.Name</dd>
+
+                                    <dt class="col-sm-4">Status</dt>
+                                    <dd class="col-sm-8">
+                                        <span class="badge @(Book.IsAvailable ? "bg-success" : "bg-warning")">
+                                            @(Book.IsAvailable ? "Available" : "Borrowed")
+                                        </span>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int BookId { get; set; }
+
+    private BookDto? Book { get; set; }
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadBook();
+    }
+
+    private async Task LoadBook()
+    {
+        if (BookId <= 0)
+        {
+            IsLoading = false;
+            return;
+        }
+
+        IsLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            Book = await BookService.GetBookAsync(BookId);
+        }
+        catch (Exception ex)
+        {
+            // In a real app, you'd log this and show a user-friendly error
+            Console.WriteLine($"Error loading book: {ex.Message}");
+            Book = null;
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void NavigateToBookList()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

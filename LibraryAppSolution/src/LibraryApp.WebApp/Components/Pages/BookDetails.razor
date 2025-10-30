@@ -1,0 +1,10 @@
+@page "/book/{BookId:int}"
+
+<PageTitle>Book Details</PageTitle>
+
+<LibraryApp.UI.BookDetails BookId="@BookId" />
+
+@code {
+    [Parameter]
+    public int BookId { get; set; }
+}

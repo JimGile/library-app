@@ -1,0 +1,16 @@
+# C#/.NET
+bin/
+obj/
+*.user
+*.suo
+packages/
+*.user
+*.suo
+*.cache
+*.log
+*.tmp
+*.swp
+*.vscode/
+.idea/
+.DS_Store
+Thumbs.db
