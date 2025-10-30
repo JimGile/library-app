@@ -26,6 +26,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+
+// Add services
+builder.Services.AddScoped<ReservationService>();
 
 // Add HTTP client
 builder.Services.AddScoped<HttpClient>();

@@ -1,0 +1,298 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="mb-1">My Reservations</h1>
+                    <p class="text-muted mb-0">Manage your book reservations and returns</p>
+                </div>
+                <button type="button" class="btn btn-outline-primary" @onclick="NavigateToBookList">
+                    <i class="bi bi-book"></i> Browse Books
+                </button>
+            </div>
+
+            @if (!IsAuthenticated)
+            {
+                <div class="alert alert-warning" role="alert">
+                    <h4 class="alert-heading">Authentication Required</h4>
+                    <p>You must be logged in to view your reservations.</p>
+                    <hr>
+                    <button type="button" class="btn btn-primary" @onclick="NavigateToLogin">
+                        <i class="bi bi-person"></i> Login
+                    </button>
+                </div>
+            }
+            else if (IsLoading)
+            {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading your reservations...</p>
+                </div>
+            }
+            else if (Reservations == null || !Reservations.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-book display-1 text-muted mb-3"></i>
+                    <h3 class="text-muted">No Reservations Found</h3>
+                    <p class="text-muted mb-4">You haven't reserved any books yet.</p>
+                    <button type="button" class="btn btn-primary btn-lg" @onclick="NavigateToBookList">
+                        <i class="bi bi-search"></i> Browse Available Books
+                    </button>
+                </div>
+            }
+            else
+            {
+                <!-- Active Reservations -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock me-2"></i>
+                            Active Reservations
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            @foreach (var reservation in Reservations.Where(r => r.Status == "Active"))
+                            {
+                                <div class="list-group-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-light rounded p-2 me-3">
+                                                    <i class="bi bi-book text-muted"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1">@reservation.Book.Title</h6>
+                                                    <p class="mb-1 text-muted">by @reservation.Book.Author</p>
+                                                    <small class="text-muted">
+                                                        Reserved on @reservation.StartDate.ToString("MMM dd, yyyy") •
+                                                        Due @reservation.DueDate.ToString("MMM dd, yyyy")
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            @if (IsReturning && ReturningReservationId == reservation.Id)
+                                            {
+                                                <button type="button" class="btn btn-success btn-sm me-2" disabled>
+                                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                    Returning...
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-success btn-sm me-2" @onclick="() => ReturnBook(reservation.Id)">
+                                                    <i class="bi bi-arrow-return-left"></i> Return Book
+                                                </button>
+                                            }
+                                            <span class="badge bg-warning">Active</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Returned Reservations -->
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Returned Books
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            @foreach (var reservation in Reservations.Where(r => r.Status == "Returned"))
+                            {
+                                <div class="list-group-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-light rounded p-2 me-3">
+                                                    <i class="bi bi-book text-success"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1">@reservation.Book.Title</h6>
+                                                    <p class="mb-1 text-muted">by @reservation.Book.Author</p>
+                                                    <small class="text-muted">
+                                                        Returned on @reservation.ReturnDate?.ToString("MMM dd, yyyy") •
+                                                        @if (reservation.LateFee > 0)
+                                                        {
+                                                            <span class="text-danger">Late fee: $@reservation.LateFee</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-success">On time</span>
+                                                        }
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <span class="badge bg-success">Returned</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Return Message -->
+            @if (!string.IsNullOrEmpty(ReturnMessage))
+            {
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="alert @(IsReturnSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+                            <i class="bi @(IsReturnSuccess ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") me-2"></i>
+                            @ReturnMessage
+                            <button type="button" class="btn-close" @onclick="ClearReturnMessage" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<ReservationDto>? Reservations { get; set; }
+    private bool IsLoading { get; set; } = true;
+    private bool IsAuthenticated { get; set; }
+    private bool IsReturning { get; set; }
+    private int? ReturningReservationId { get; set; }
+    private string? ReturnMessage { get; set; }
+    private bool IsReturnSuccess { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAuthenticationState();
+        if (IsAuthenticated)
+        {
+            await LoadReservations();
+        }
+        else
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task CheckAuthenticationState()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+    }
+
+    private async Task LoadReservations()
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var response = await Http.GetAsync("api/reservation/my-reservations");
+            if (response.IsSuccessStatusCode)
+            {
+                Reservations = await response.Content.ReadFromJsonAsync<IEnumerable<ReservationDto>>();
+            }
+            else
+            {
+                Reservations = Enumerable.Empty<ReservationDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading reservations: {ex.Message}");
+            Reservations = Enumerable.Empty<ReservationDto>();
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ReturnBook(int reservationId)
+    {
+        IsReturning = true;
+        ReturningReservationId = reservationId;
+        ReturnMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var response = await Http.PostAsync($"api/reservation/{reservationId}/return", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                IsReturnSuccess = true;
+                ReturnMessage = "Book returned successfully!";
+                // Refresh reservations
+                await LoadReservations();
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                IsReturnSuccess = false;
+                ReturnMessage = $"Return failed: {errorMessage}";
+            }
+        }
+        catch (Exception ex)
+        {
+            IsReturnSuccess = false;
+            ReturnMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            IsReturning = false;
+            ReturningReservationId = null;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearReturnMessage()
+    {
+        ReturnMessage = null;
+        StateHasChanged();
+    }
+
+    private void NavigateToBookList()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void NavigateToLogin()
+    {
+        Navigation.NavigateTo("/login");
+    }
+
+    // DTO for reservation data
+    public class ReservationDto
+    {
+        public int Id { get; set; }
+        public BookDto Book { get; set; } = new();
+        public DateTime StartDate { get; set; }
+        public DateTime DueDate { get; set; }
+        public DateTime? ReturnDate { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public decimal LateFee { get; set; }
+    }
+
+    public class BookDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Author { get; set; } = string.Empty;
+    }
+}

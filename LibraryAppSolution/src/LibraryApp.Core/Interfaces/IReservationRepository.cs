@@ -39,4 +39,18 @@ public interface IReservationRepository : IRepository<Reservation>
     /// <param name="id">The reservation ID.</param>
     /// <returns>The reservation with details, or null if not found.</returns>
     Task<Reservation?> GetReservationWithDetailsAsync(int id);
+
+    /// <summary>
+    /// Checks if a member has reached the maximum number of active reservations (3).
+    /// </summary>
+    /// <param name="memberId">The member ID.</param>
+    /// <returns>True if member has 3 or more active reservations.</returns>
+    Task<bool> HasMemberReachedReservationLimitAsync(int memberId);
+
+    /// <summary>
+    /// Checks if a book is currently reserved by another member.
+    /// </summary>
+    /// <param name="bookId">The book ID.</param>
+    /// <returns>True if book is currently reserved.</returns>
+    Task<bool> IsBookCurrentlyReservedAsync(int bookId);
 }

@@ -1,7 +1,10 @@
 @using LibraryApp.Core.DTOs
 @using LibraryApp.Core.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IBookService BookService
 @inject NavigationManager Navigation
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
 
 @if (Book == null)
 {
@@ -85,15 +88,35 @@ else
                                             </div>
                                             @if (Book.IsAvailable)
                                             {
-                                                <button type="button" class="btn btn-success btn-lg w-100 mb-2">
-                                                    <i class="bi bi-bag-check"></i> Reserve Book
-                                                </button>
-                                                <small class="text-muted">Available for immediate pickup</small>
+                                                @if (IsAuthenticated)
+                                                {
+                                                    @if (IsReserving)
+                                                    {
+                                                        <button type="button" class="btn btn-success btn-lg w-100 mb-2" disabled>
+                                                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                            Reserving...
+                                                        </button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="button" class="btn btn-success btn-lg w-100 mb-2" @onclick="ReserveBook">
+                                                            <i class="bi bi-bag-check"></i> Reserve Book
+                                                        </button>
+                                                    }
+                                                    <small class="text-muted">Available for immediate pickup</small>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-outline-primary btn-lg w-100 mb-2" @onclick="NavigateToLogin">
+                                                        <i class="bi bi-person"></i> Login to Reserve
+                                                    </button>
+                                                    <small class="text-muted">Login required to reserve books</small>
+                                                }
                                             }
                                             else
                                             {
                                                 <button type="button" class="btn btn-outline-secondary btn-lg w-100 mb-2" disabled>
-                                                    <i class="bi bi-clock"></i> Join Waitlist
+                                                    <i class="bi bi-clock"></i> Currently Borrowed
                                                 </button>
                                                 <small class="text-muted">Book is currently borrowed</small>
                                             }
@@ -103,6 +126,20 @@ else
                             </div>
                         </div>
                     </div>
+
+                    <!-- Reservation Message -->
+                    @if (!string.IsNullOrEmpty(ReservationMessage))
+                    {
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="alert @(IsReservationSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+                                    <i class="bi @(IsReservationSuccess ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") me-2"></i>
+                                    @ReservationMessage
+                                    <button type="button" class="btn-close" @onclick="ClearReservationMessage" aria-label="Close"></button>
+                                </div>
+                            </div>
+                        </div>
+                    }
 
                     <!-- Sidebar -->
                     <div class="col-lg-4">
@@ -164,10 +201,15 @@ else
 
     private BookDto? Book { get; set; }
     private bool IsLoading { get; set; } = true;
+    private bool IsAuthenticated { get; set; }
+    private bool IsReserving { get; set; }
+    private string? ReservationMessage { get; set; }
+    private bool IsReservationSuccess { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
         await LoadBook();
+        await CheckAuthenticationState();
     }
 
     private async Task LoadBook()
@@ -196,6 +238,63 @@ else
             IsLoading = false;
             StateHasChanged();
         }
+    }
+
+    private async Task CheckAuthenticationState()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+        StateHasChanged();
+    }
+
+    private async Task ReserveBook()
+    {
+        if (!IsAuthenticated || Book == null)
+            return;
+
+        IsReserving = true;
+        ReservationMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var response = await Http.PostAsync($"api/reservation/reserve/{Book.Id}", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                IsReservationSuccess = true;
+                ReservationMessage = "Book reserved successfully! You can pick it up at the library.";
+                // Refresh book details to update availability
+                await LoadBook();
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                IsReservationSuccess = false;
+                ReservationMessage = $"Reservation failed: {errorMessage}";
+            }
+        }
+        catch (Exception ex)
+        {
+            IsReservationSuccess = false;
+            ReservationMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            IsReserving = false;
+            StateHasChanged();
+        }
+    }
+
+    private void NavigateToLogin()
+    {
+        Navigation.NavigateTo("/login");
+    }
+
+    private void ClearReservationMessage()
+    {
+        ReservationMessage = null;
+        StateHasChanged();
     }
 
     private void NavigateToBookList()

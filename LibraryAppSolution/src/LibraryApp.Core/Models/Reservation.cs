@@ -27,20 +27,16 @@ public class Reservation
     public int MemberId { get; set; }
 
     /// <summary>
-    /// Date when the reservation was made.
+    /// Date when the reservation started (book was borrowed).
     /// </summary>
     [Required]
-    public DateTime ReservationDate { get; set; } = DateTime.UtcNow;
+    public DateTime StartDate { get; set; }
 
     /// <summary>
-    /// Date when the book was borrowed (null if not yet borrowed).
+    /// Date when the book is due to be returned (StartDate + 14 days).
     /// </summary>
-    public DateTime? BorrowDate { get; set; }
-
-    /// <summary>
-    /// Date when the book is due to be returned (null if not borrowed).
-    /// </summary>
-    public DateTime? DueDate { get; set; }
+    [Required]
+    public DateTime DueDate { get; set; }
 
     /// <summary>
     /// Date when the book was actually returned (null if not returned).
@@ -48,10 +44,17 @@ public class Reservation
     public DateTime? ReturnDate { get; set; }
 
     /// <summary>
-    /// Current status of the reservation ("Reserved", "Borrowed", "Returned", "Overdue").
+    /// Current status of the reservation ("Active", "Returned", "Overdue").
     /// </summary>
     [Required]
-    public string Status { get; set; } = "Reserved";
+    [StringLength(20)]
+    public string Status { get; set; } = "Active";
+
+    /// <summary>
+    /// Accumulated late fee ($5 per day overdue).
+    /// </summary>
+    [Range(0, double.MaxValue)]
+    public decimal LateFee { get; set; } = 0;
 
     /// <summary>
     /// Navigation property to the reserved book.
