@@ -21,3 +21,5 @@ do NOT run AuthTest.cs. It always hangs. Either fix it or remove it.
 /speckit.implement please implement the User Story: Admin Reservation Oversight [US6]
 
 /speckit.implement please implement the User Story: Static Content Pages [US7]
+
+cd "C:\Data\Projects\dotnet\library-app\LibraryAppSolution\src\LibraryApp.WebApp"; dotnet run --urls "http://localhost:5000"

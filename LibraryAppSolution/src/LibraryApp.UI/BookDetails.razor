@@ -42,7 +42,9 @@ else
                 <nav aria-label="breadcrumb" class="mb-4">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                            <a href="#" @onclick="NavigateToBookList" class="text-decoration-none">Book Catalog</a>
+                            <span @onclick="NavigateToBookList" style="cursor: pointer; color: #0d6efd; text-decoration: underline;">
+                                Book Catalog
+                            </span>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">@Book.Title</li>
                     </ol>

@@ -16,8 +16,7 @@
                             <label for="searchInput" class="form-label">Search</label>
                             <input type="text" class="form-control" id="searchInput"
                                    placeholder="Search by title, author, or category..."
-                                   @bind="SearchTerm"
-                                   @oninput="HandleSearchInput" />
+                                   @bind="SearchTerm" />
                         </div>
                         <div class="col-md-3">
                             <label for="sortSelect" class="form-label">Sort By</label>
@@ -35,8 +34,8 @@
                             </select>
                         </div>
                         <div class="col-md-1 d-flex align-items-end">
-                            <button type="button" class="btn btn-primary w-100" @onclick="LoadBooks">
-                                <i class="bi bi-search"></i>
+                            <button type="button" class="btn btn-primary w-100" @onclick="LoadBooks" @onclick:preventDefault @onclick:stopPropagation>
+                                <i class="bi bi-search"></i> Search
                             </button>
                         </div>
                     </div>
@@ -112,24 +111,24 @@
                         <nav aria-label="Book pagination">
                             <ul class="pagination justify-content-center">
                                 <li class="page-item @(Books.Page <= 1 ? "disabled" : "")">
-                                    <a class="page-link" href="#" @onclick="() => ChangePage(Books.Page - 1)" aria-disabled="@(Books.Page <= 1)">
+                                    <span class="page-link" @onclick="() => ChangePage(Books.Page - 1)" style="cursor: pointer;" aria-disabled="@(Books.Page <= 1)">
                                         Previous
-                                    </a>
+                                    </span>
                                 </li>
 
                                 @for (int i = Math.Max(1, Books.Page - 2); i <= Math.Min(Books.TotalPages, Books.Page + 2); i++)
                                 {
                                     <li class="page-item @(i == Books.Page ? "active" : "")">
-                                        <a class="page-link" href="#" @onclick="() => ChangePage(i)">
+                                        <span class="page-link" @onclick="() => ChangePage(i)" style="cursor: pointer;">
                                             @i
-                                        </a>
+                                        </span>
                                     </li>
                                 }
 
                                 <li class="page-item @(Books.Page >= Books.TotalPages ? "disabled" : "")">
-                                    <a class="page-link" href="#" @onclick="() => ChangePage(Books.Page + 1)" aria-disabled="@(Books.Page >= Books.TotalPages)">
+                                    <span class="page-link" @onclick="() => ChangePage(Books.Page + 1)" style="cursor: pointer;" aria-disabled="@(Books.Page >= Books.TotalPages)">
                                         Next
-                                    </a>
+                                    </span>
                                 </li>
                             </ul>
                         </nav>
@@ -229,18 +228,6 @@
         {
             IsLoading = false;
             StateHasChanged();
-        }
-    }
-
-    private async Task HandleSearchInput()
-    {
-        // Debounce search - wait 300ms after user stops typing
-        await Task.Delay(300);
-
-        // Only search if the search term has actually changed
-        if (SearchTerm != (Books?.Items.FirstOrDefault()?.Title ?? string.Empty))
-        {
-            await LoadBooks();
         }
     }
 
