@@ -10,6 +10,8 @@
 
 /speckit.implement please implement the User Story: Member Registration and Login [US2]
 
+do NOT run AuthTest.cs. It always hangs. Either fix it or remove it.
+
 /speckit.implement please implement the User Story: Book Reservations [US3]
 
 /speckit.implement please implement the User Story: Admin Book Management [US4]

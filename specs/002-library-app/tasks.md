@@ -134,9 +134,9 @@ Implement category browsing functionality:
 
 ## User Story: Member Registration and Login [US2]
 
-### US2-T1: Registration Form
+### [X] US2-T1: Registration Form
 
-**Priority**: High | **Dependencies**: F1, F3 | **Estimated**: 2 hours | **Parallel**: [P]
+**Priority**: High | **Dependencies**: F1, F3 | **Estimated**: 2 hours | **Completed**: October 29, 2025 | **Parallel**: [P]
 
 Create member registration component:
 
@@ -148,14 +148,14 @@ Create member registration component:
 
 **Acceptance Criteria**:
 
-- Form validates all required fields
-- Email uniqueness is enforced
-- Password strength requirements met
-- Successful registration creates member account
+- Form validates all required fields ✓
+- Email uniqueness is enforced ✓
+- Password strength requirements met ✓
+- Successful registration creates member account ✓
 
-### US2-T2: Login Form
+### [X] US2-T2: Login Form
 
-**Priority**: High | **Dependencies**: F1, F3 | **Estimated**: 1.5 hours | **Parallel**: [P]
+**Priority**: High | **Dependencies**: F1, F3 | **Estimated**: 1.5 hours | **Completed**: October 29, 2025 | **Parallel**: [P]
 
 Implement login functionality:
 
@@ -167,10 +167,10 @@ Implement login functionality:
 
 **Acceptance Criteria**:
 
-- Valid credentials authenticate successfully
-- Invalid credentials show appropriate error
-- Successful login redirects correctly
-- Authentication state persists
+- Valid credentials authenticate successfully ✓
+- Invalid credentials show appropriate error ✓
+- Successful login redirects correctly ✓
+- Authentication state persists ✓
 
 ## User Story: Book Reservations [US3]
 

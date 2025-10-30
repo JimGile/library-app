@@ -1,6 +1,7 @@
 using LibraryApp.Core.Interfaces;
 using LibraryApp.WebApp.Controllers.Models;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
 using System.Net.Http.Json;
 using System.Security.Claims;
 
@@ -13,16 +14,19 @@ public class LibraryAuthStateProvider : AuthenticationStateProvider
 {
     private readonly HttpClient _httpClient;
     private readonly ITokenService _tokenService;
+    private readonly IJSRuntime _jsRuntime;
 
     /// <summary>
     /// Initializes a new instance of the LibraryAuthStateProvider.
     /// </summary>
     /// <param name="httpClient">The HTTP client.</param>
     /// <param name="tokenService">The token service.</param>
-    public LibraryAuthStateProvider(HttpClient httpClient, ITokenService tokenService)
+    /// <param name="jsRuntime">The JavaScript runtime.</param>
+    public LibraryAuthStateProvider(HttpClient httpClient, ITokenService tokenService, IJSRuntime jsRuntime)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+        _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
     }
 
     /// <summary>
@@ -134,9 +138,15 @@ public class LibraryAuthStateProvider : AuthenticationStateProvider
     /// <returns>The JWT token, or null if not authenticated.</returns>
     private async Task<string?> GetTokenAsync()
     {
-        // In a real application, this would get the token from local storage or a secure cookie
-        // For now, we'll use session storage via JavaScript interop
-        return null; // TODO: Implement token storage
+        try
+        {
+            return await _jsRuntime.InvokeAsync<string?>("sessionStorageHelper.getItem", "authToken");
+        }
+        catch
+        {
+            // JSRuntime not available or session storage not accessible
+            return null;
+        }
     }
 
     /// <summary>
@@ -145,7 +155,15 @@ public class LibraryAuthStateProvider : AuthenticationStateProvider
     /// <param name="token">The JWT token to save.</param>
     private async Task SaveTokenAsync(string token)
     {
-        // TODO: Implement secure token storage
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("sessionStorageHelper.setItem", "authToken", token);
+        }
+        catch
+        {
+            // JSRuntime not available or session storage not accessible
+            // This is expected during server-side initialization
+        }
     }
 
     /// <summary>
@@ -153,6 +171,14 @@ public class LibraryAuthStateProvider : AuthenticationStateProvider
     /// </summary>
     private async Task RemoveTokenAsync()
     {
-        // TODO: Implement token removal
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("sessionStorageHelper.removeItem", "authToken");
+        }
+        catch
+        {
+            // JSRuntime not available or session storage not accessible
+            // This is expected during server-side initialization
+        }
     }
 }
