@@ -1,0 +1,33 @@
+@page "/category/{CategoryId:int}"
+@using LibraryApp.UI
+@using Microsoft.AspNetCore.Components
+
+<PageTitle>Category - Books</PageTitle>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Category</h2>
+
+            <!-- Reuse the shared BookList component in category mode -->
+            <BookList CategoryId="@CategoryId" />
+
+            <div class="mt-3">
+                <button class="btn btn-link p-0" @onclick="NavigateToHome">Back to categories</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int CategoryId { get; set; }
+
+    [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+
+    private void NavigateToHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

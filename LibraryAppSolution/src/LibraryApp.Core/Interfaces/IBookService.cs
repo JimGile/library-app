@@ -35,4 +35,11 @@ public interface IBookService
     /// </summary>
     /// <returns>List of categories.</returns>
     Task<IEnumerable<CategoryDto>> GetCategoriesAsync();
+
+    /// <summary>
+    /// Gets all books for a specific category.
+    /// </summary>
+    /// <param name="categoryId">The category id.</param>
+    /// <returns>Collection of book DTOs in the category.</returns>
+    Task<IEnumerable<BookDto>> GetBooksByCategoryAsync(int categoryId);
 }

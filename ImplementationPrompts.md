@@ -1,5 +1,9 @@
 # Implementation Prompts: Library Application
 
+/speckit.specify please create new specifications from the requirements in the InitialRequirements.md file.
+
+/speckit.plan please follow the prompts in PlanInfoPrompt-Django.md to create an implementation plan.
+
 /speckit.implement please implement the F1 tasks.
 
 /speckit.implement please implement the F2 tasks.

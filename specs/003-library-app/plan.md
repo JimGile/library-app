@@ -17,7 +17,6 @@ Primary approach:
 
 - Data: PostgreSQL for production; SQLite supported for local/dev and CI. ORM models follow spec entities (Book, Category, Member, Reservation).
 
-
 ## Technical Context
 
 **Language/Version**: Python 3.11 (development/CI), Node.js 18+ for frontend tooling.  
@@ -136,6 +135,7 @@ frontend/                # React SPA
 tests/
 ├── backend/             # integration and unit tests for Django (pytest)
 └── frontend/            # unit and component tests for React
+
 ```
 
 Rationale: clear separation of concerns, allows independent development and deployment of API and frontend, aligns with the requirement for server-side filtering/paging/sorting.

@@ -107,4 +107,29 @@ public class BookService : IBookService
             Description = c.Description
         });
     }
+
+    /// <summary>
+    /// Gets all books for a specific category.
+    /// </summary>
+    /// <param name="categoryId">The category id.</param>
+    /// <returns>Collection of book DTOs in the category.</returns>
+    public async Task<IEnumerable<BookDto>> GetBooksByCategoryAsync(int categoryId)
+    {
+        var books = await _bookRepository.GetBooksByCategoryAsync(categoryId);
+
+        return books.Select(b => new BookDto
+        {
+            Id = b.Id,
+            Title = b.Title,
+            Author = b.Author,
+            Description = b.Description ?? string.Empty,
+            IsAvailable = b.IsAvailable,
+            Category = new CategoryDto
+            {
+                Id = b.Category.Id,
+                Name = b.Category.Name,
+                Description = b.Category.Description
+            }
+        });
+    }
 }

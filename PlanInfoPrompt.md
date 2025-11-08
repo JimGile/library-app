@@ -1,7 +1,10 @@
 # PlanInfoPrompt
 
 Implement this project specification as a .Net 9 Blazor Hybrid application using standard .Net 9 best practices and Blazor Bootstrap components.
-The application should be responsive and ready for mobile.
+
+List pages should use the Blazor Grid component with Server side filtering, paging and sorting.
+
+The application should be sleek, modern,responsive and ready for mobile.
 
 ## The Ideal Project Structure
 
@@ -14,14 +17,13 @@ Here’s what the solution structure and its dependencies should look like:
         * Interfaces (e.g., `IProductService`).
         * Logic that uses `HttpClient` to call external APIs.
     * **Dependencies:** None. This library has zero dependencies on Blazor, MAUI, or any UI framework. It's pure C# logic.
-    * **Java Analogy:** This is your primary "business logic JAR file."
 
 2. **`YourApp.UI` (Razor Class Library - RCL)**
     * **Contents:**
         * All your `.razor` components (pages, layouts, shared components).
         * Shared static assets like CSS and JavaScript.
     * **Dependencies:** It **references `YourApp.Core`** so that your components can inject and use the services.
-    * **Java Analogy:** This is your specialized "UI component JAR file."
+    * **Responsibility:** To define the standard UI components and layouts for the app that can be shared between web and native.
 
 3. **`YourApp.WebApp` (Blazor Web App Project)**
     * **Contents:**
