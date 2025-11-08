@@ -4,6 +4,14 @@
 
 /speckit.plan please follow the prompts in PlanInfoPrompt-Django.md to create an implementation plan.
 
+/speckit.tasks please create tasks from the plan in the tasks.md file.
+
+/speckit.implement please implement phase 1 tasks.
+/speckit.implement please implement phase 2 tasks.
+
+make seed import-safe
+/speckit.implement please implement US1
+
 /speckit.implement please implement the F1 tasks.
 
 /speckit.implement please implement the F2 tasks.

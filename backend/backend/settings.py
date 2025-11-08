@@ -27,6 +27,9 @@ INSTALLED_APPS = [
     'apps.reservations',
 ]
 
+# Use custom member user model
+AUTH_USER_MODEL = 'members.Member'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

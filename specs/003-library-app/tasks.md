@@ -35,14 +35,14 @@ Notes: Tasks are organized by Phase then by User Story (priority order). Each ta
 
 ### User Story 1 — Browse and discover books (P1)
 
-- [ ] T017 [US1] Implement `BookSerializer` and `CategorySerializer` in `backend/apps/books/serializers.py` [P]
-- [ ] T018 [US1] Implement paginated Book list API with search/sort filters in `backend/apps/books/views.py` (endpoint: `GET /api/books/`) — support query params `?q=`, `?category=`, `?ordering=title,-author`, `?page=`
-- [ ] T019 [US1] Add URL route `backend/apps/books/urls.py` mapping `/api/books/` to list view
-- [ ] T020 [US1] Implement Book detail API `GET /api/books/{id}/` in `backend/apps/books/views.py`
-- [ ] T021 [US1] Create frontend `BookList` component at `frontend/src/components/BookList/BookList.tsx` that consumes `/api/books/` and supports search, sorting and pagination
-- [ ] T022 [US1] Create frontend `BookDetails` page at `frontend/src/pages/BookDetails/BookDetails.tsx` which consumes `/api/books/{id}/`
-- [ ] T023 [P] [US1] Add client-side routing for `/books` and `/books/:id` in `frontend/src/router.tsx` or `frontend/src/App.tsx`
-- [ ] T024 [US1] Add unit test(s) for Book list API (happy path search and pagination) in `backend/tests/test_books_api.py`
+- [X] T017 [US1] Implement `BookSerializer` and `CategorySerializer` in `backend/apps/books/serializers.py` [P]
+- [X] T018 [US1] Implement paginated Book list API with search/sort filters in `backend/apps/books/views.py` (endpoint: `GET /api/books/`) — support query params `?q=`, `?category=`, `?ordering=title,-author`, `?page=`
+- [X] T019 [US1] Add URL route `backend/apps/books/urls.py` mapping `/api/books/` to list view
+- [X] T020 [US1] Implement Book detail API `GET /api/books/{id}/` in `backend/apps/books/views.py`
+- [X] T021 [US1] Create frontend `BookList` component at `frontend/src/components/BookList/BookList.tsx` that consumes `/api/books/` and supports search, sorting and pagination
+- [X] T022 [US1] Create frontend `BookDetails` page at `frontend/src/pages/BookDetails/BookDetails.tsx` which consumes `/api/books/{id}/`
+- [X] T023 [P] [US1] Add client-side routing for `/books` and `/books/:id` in `frontend/src/router.tsx` or `frontend/src/App.tsx`
+- [X] T024 [US1] Add unit test(s) for Book list API (happy path search and pagination) in `backend/tests/test_books_api.py`
 
 ### User Story 2 — Member registration and authentication (P1)
 
@@ -81,6 +81,13 @@ Notes: Tasks are organized by Phase then by User Story (priority order). Each ta
 - [ ] T045 Update `specs/003-library-app/quickstart.md` with concrete run steps for local dev (how to run backend and frontend) and include example seed data commands
 - [ ] T046 Add end-to-end smoke test(s) (Playwright or Cypress) in `tests/e2e/` that cover core happy path: register → login → browse → reserve → return
 - [ ] T047 Run format/linters: `backend/` use `ruff`/`black` (python), `frontend/` run `eslint`/`prettier` and fix obvious issues
+
+### US1 polish — search & pagination
+
+- [X] T021.1 [US1] Add frontend search input and page size selector to `frontend/src/pages/BookList.tsx` (completed)
+- [X] T021.2 [US1] Add prev/next pagination controls wired to API (completed)
+- [X] T021.3 [US1] Add server-side field filters and ordering support (django-filter + DRF Ordering) (completed)
+- [X] T021.4 [US1] Add lightweight list serializer to reduce payload for list endpoints (completed)
 
 ## Dependencies and Story Order
 
