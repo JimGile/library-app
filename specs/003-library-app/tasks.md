@@ -46,11 +46,11 @@ Notes: Tasks are organized by Phase then by User Story (priority order). Each ta
 
 ### User Story 2 — Member registration and authentication (P1)
 
-- [ ] T025 [US2] Implement registration API `POST /api/auth/register/` in `backend/apps/members/views.py` and serializer in `backend/apps/members/serializers.py`
-- [ ] T026 [US2] Implement login API `POST /api/auth/login/` (DRF Token or JWT) at `backend/apps/members/views.py` and wire tokens to `backend/apps/members/urls.py`
-- [ ] T027 [US2] Create frontend `Register` and `Login` pages at `frontend/src/pages/Auth/Register.tsx` and `frontend/src/pages/Auth/Login.tsx` and client auth service at `frontend/src/services/auth.ts`
-- [ ] T028 [US2] Add authentication state handling in frontend at `frontend/src/context/AuthContext.tsx` (login/logout, token storage)
-- [ ] T029 [US2] Add backend tests for registration/login in `backend/tests/test_auth.py`
+- [X] T025 [US2] Implement registration API `POST /api/auth/register/` in `backend/apps/members/views.py` and serializer in `backend/apps/members/serializers.py`
+- [X] T026 [US2] Implement login API `POST /api/auth/login/` (DRF Token or JWT) at `backend/apps/members/views.py` and wire tokens to `backend/apps/members/urls.py`
+- [X] T027 [US2] Create frontend `Register` and `Login` pages at `frontend/src/pages/Auth/Register.tsx` and `frontend/src/pages/Auth/Login.tsx` and client auth service at `frontend/src/services/auth.ts`
+- [X] T028 [US2] Add authentication state handling in frontend at `frontend/src/context/AuthContext.tsx` (login/logout, token storage)
+- [X] T029 [US2] Add backend tests for registration/login in `backend/tests/test_auth.py`
 
 ### User Story 3 — Reserve and manage borrowed books (P1)
 

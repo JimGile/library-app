@@ -21,20 +21,19 @@ export default function BookDetails() {
 
   if (loading) return <div>Loading…</div>
   if (!book) return <div>Book not found</div>
-
   return (
-    <div>
-      <h2>{book.title}</h2>
-      <p>
-        <strong>Author:</strong> {book.author}
-      </p>
-      <p>
-        <strong>Category:</strong> {book.category?.name}
-      </p>
-      <p>{book.description}</p>
-      <p>
-        <em>{book.is_available ? 'Available' : 'Not available'}</em>
-      </p>
+    <div className="card">
+      <div className="card-body">
+        <h2 className="card-title">{book.title}</h2>
+        <h6 className="card-subtitle mb-2 text-muted">{book.author}</h6>
+        <p className="mb-1">
+          <strong>Category:</strong> {book.category?.name}
+        </p>
+        <p className="card-text">{book.description}</p>
+        <p>
+          <span className={`badge ${book.is_available ? 'bg-success' : 'bg-secondary'}`}>{book.is_available ? 'Available' : 'Not available'}</span>
+        </p>
+      </div>
     </div>
   )
 }

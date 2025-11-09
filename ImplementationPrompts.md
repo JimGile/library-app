@@ -11,6 +11,7 @@
 
 make seed import-safe
 /speckit.implement please implement US1
+/speckit.implement implement User Story 2
 
 /speckit.implement please implement the F1 tasks.
 

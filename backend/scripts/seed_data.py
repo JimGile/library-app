@@ -1,36 +1,37 @@
+r"""Seed script to populate sample categories, books and a demo member.
+
+This script is safe to import and idempotent (uses get_or_create). It is written so it
+can be executed directly from the backend folder or via the repository root.
+
+Examples (PowerShell):
+
+  # from repository root
+  & ".\.venv\Scripts\python.exe" backend\scripts\seed_data.py
+
+  # or, from the backend directory
+  Push-Location backend; & "..\.venv\Scripts\python.exe" -m pip install -r requirements.txt; & ".\.venv\Scripts\python.exe" manage.py migrate; & ".\.venv\Scripts\python.exe" scripts/seed_data.py; Pop-Location
+
+The script adds the parent "backend" directory to sys.path when executed directly so
+the Django project package can be imported reliably.
 """
-Seed script to populate sample categories, books and a demo member.
 
-Run from repository root after installing requirements and applying migrations:
-
-    setx DJANGO_SETTINGS_MODULE backend.settings
-    python backend\manage.py shell -c "exec(open('backend/scripts/seed_data.py').read())"
-
-"""
 import os
-import django
+import sys
+
+# Ensure the Django project package (the parent "backend" directory) is on sys.path
+# when the script is executed directly (so imports like "backend.settings" work).
+HERE = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(HERE)
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
-"""
-Seed script to populate sample categories, books and a demo member.
 
-Run after installing requirements and applying migrations. Examples use forward slashes to
-avoid escape-sequence warnings on Windows PowerShell shown in some linters.
-
-    python -m venv .venv
-    .venv/Scripts/python.exe -m pip install -r backend/requirements.txt
-    .venv/Scripts/python.exe backend/manage.py migrate
-    .venv/Scripts/python.exe backend/scripts/seed_data.py
-
-The script is idempotent and uses get_or_create so it can be run multiple times.
-"""
-import os
 import django
 
-def seed():
-    import django
 
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+def seed():
+    # Import and configure Django when running the seeder
     django.setup()
 
     from apps.books.models import Category, Book
